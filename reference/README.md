@@ -1,19 +1,18 @@
 # Shared Reference Directory
 
-Single source of truth for stable data that spans projects. Read on demand, not every turn.
+Single source of truth for stable data that spans projects. Read on demand by AI assistants, not loaded every turn.
 
 ## Structure
 ```
 reference/
-├── company/           # Company-wide facts (fill in as needed)
-│   ├── company.md     # Key people, products, partnerships
+├── company/           # Company-wide facts
+│   ├── company.md     # Group structure, entities, key people
 │   ├── terminology.md # Business terms, style rules
 │   └── standards.md   # Document formatting, compliance
-├── personal/          # Personal project reference (fill in as needed)
 └── README.md          # This file
 ```
 
 ## Maintenance
 - Update when facts change (people, products, terms)
 - Project CLAUDE.md files reference these — never duplicate content
-- Add new topic files as needed
+- Add new topic directories as needed (e.g., `personal/`, `financial/`)

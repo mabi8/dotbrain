@@ -1,0 +1,52 @@
+# Project: <PROJECT_NAME>
+
+## Orientation
+
+- **Goal**: <one-line summary of what this project delivers>
+- **Deadline**: <YYYY-MM-DD or "ongoing">
+- **Status**: <planning | active | maintenance>
+- **Stack**: <e.g., TypeScript, Next.js, Postgres>
+
+## Key Paths
+
+| Path | Purpose |
+|------|---------|
+| `src/` | Application source |
+| `tests/` | Test suite |
+| `scripts/` | Build/deploy helpers |
+
+## Build & Run
+
+```bash
+# Install dependencies
+<command>
+
+# Run dev server
+<command>
+
+# Run tests
+<command>
+
+# Build for production
+<command>
+```
+
+## Architecture
+
+<Brief description of the system architecture. Key modules, data flow, external dependencies.>
+
+## Conventions
+
+- <e.g., Use conventional commits>
+- <e.g., All PRs require tests>
+- <e.g., No direct pushes to main>
+
+## Shared Reference
+
+Read from `~/repos/dotbrain/reference/` on demand:
+- `company/company.md` — group structure, key people
+
+## Tasks
+
+- Track deliverables in `tasks/todo.md`
+- Record corrections in `tasks/lessons.md`

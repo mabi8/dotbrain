@@ -1,0 +1,40 @@
+# Project: <PROJECT_NAME>
+
+## Stack
+- <e.g., TypeScript, Next.js, Tailwind, Postgres>
+
+## Conventions
+- Use conventional commits (feat:, fix:, chore:, docs:)
+- Prefer named exports over default exports
+- Use async/await over .then() chains
+- Colocate tests next to source files (*.test.ts)
+- No any types — use unknown + type narrowing if needed
+
+## Code Style
+- Concise over verbose — no unnecessary abstractions
+- Functions over classes unless state is genuinely needed
+- Early returns over nested conditionals
+- Descriptive variable names — no abbreviations except well-known ones (id, url, db)
+
+## File Structure
+- `src/` — application source
+- `tests/` — integration/e2e tests
+- `scripts/` — build and deploy helpers
+
+## Key Commands
+```bash
+# Dev server
+<command>
+
+# Tests
+<command>
+
+# Lint
+<command>
+
+# Build
+<command>
+```
+
+## Shared Reference
+- Company context: ~/repos/dotbrain/reference/company/company.md

@@ -1,0 +1,61 @@
+# Project: <PROJECT_NAME>
+
+## Orientation
+
+- **Goal**: <one-line summary of what this project delivers>
+- **Deadline**: <YYYY-MM-DD>
+- **Status**: <planning | drafting | review | finalised>
+- **Authoritative source**: <which deliverable is the source of truth for shared figures>
+
+### Deliverables
+
+| # | Deliverable | Status | Notes |
+|---|-------------|--------|-------|
+| 1 | <name> | not started | |
+| 2 | <name> | not started | |
+
+## Approach
+
+<!-- Keep one of the two sections below, delete the other -->
+
+### Drafting Approach
+1. Read source materials from `source/`
+2. Read relevant shared reference from `~/repos/dotbrain/reference/`
+3. Draft into `drafts/<deliverable>.md`
+4. Convert to final format in `output/`
+
+### Review Approach
+1. Read source document from `source/`
+2. Read relevant shared reference from `~/repos/dotbrain/reference/`
+3. Produce review/analysis into `drafts/`
+4. Generate final output to `output/`
+
+## Voice & Style
+
+- <e.g., Formal, third person, present tense>
+- <e.g., Australian English spelling>
+- <e.g., Numbers: spell out one–nine, numerals for 10+>
+
+## Shared Reference
+
+Read from `~/repos/dotbrain/reference/` on demand:
+- `company/company.md` — group structure, key people
+- `company/terminology.md` — business terms, style rules
+- `company/standards.md` — document formatting, compliance
+
+## Directory Structure
+
+```
+source/          # Read-only reference materials
+drafts/          # Working documents (one file per deliverable)
+output/          # Generated artifacts (gitignored)
+tasks/
+  todo.md        # Deliverable checklist
+  lessons.md     # Corrections from prior sessions
+```
+
+## Tasks
+
+- Track deliverables in `tasks/todo.md`
+- Record corrections in `tasks/lessons.md`
+- When updating a shared figure, grep `drafts/` for the same figure and update all instances

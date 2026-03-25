@@ -1,0 +1,25 @@
+# Project: <PROJECT_NAME>
+
+## Purpose
+- <one-line summary of what this project delivers>
+
+## Voice & Style
+- Formal, third person, present tense
+- Australian English spelling
+- Numbers: spell out one–nine, numerals for 10+
+- Avoid jargon unless defined in terminology reference
+
+## Document Conventions
+- One deliverable per file in drafts/
+- Source materials in source/ are read-only — never modify
+- Output goes to output/
+
+## Key References
+- Company context: ~/repos/dotbrain/reference/company/company.md
+- Business terms: ~/repos/dotbrain/reference/company/terminology.md
+- Document standards: ~/repos/dotbrain/reference/company/standards.md
+
+## Quality
+- Cross-check all figures against source materials
+- Flag any figure that appears in multiple deliverables — keep them consistent
+- When uncertain about a fact, say so rather than fabricating
