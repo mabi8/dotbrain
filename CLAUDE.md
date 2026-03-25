@@ -10,6 +10,8 @@ templates/           # Seed files for new projects (symlink targets)
   cursorrules.*      # .cursorrules templates by project type
 reference/           # Shared context data (read on demand)
   company/           # Company-wide facts
+  infrastructure.md  # VPS hosts, MCP stack, services, monitoring
+  working-principles.md  # How Markus + Claude collaborate
 scripts/
   link.sh            # Symlink helper
 ```

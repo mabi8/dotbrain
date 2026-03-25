@@ -5,11 +5,13 @@ Single source of truth for stable data that spans projects. Read on demand by AI
 ## Structure
 ```
 reference/
-├── company/           # Company-wide facts
-│   ├── company.md     # Group structure, entities, key people
-│   ├── terminology.md # Business terms, style rules
-│   └── standards.md   # Document formatting, compliance
-└── README.md          # This file
+├── company/              # Company-wide facts
+│   ├── company.md        # Group structure, entities, key people
+│   ├── terminology.md    # Business terms, style rules
+│   └── standards.md      # Document formatting, compliance
+├── infrastructure.md     # VPS hosts, MCP stack, services, monitoring, local dev
+├── working-principles.md # How Markus + Claude collaborate, agentic workflow
+└── README.md             # This file
 ```
 
 ## Maintenance

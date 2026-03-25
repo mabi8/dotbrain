@@ -30,6 +30,12 @@ The Blue Ocean / BC Living group operates across real estate and private equity,
 - Full lifecycle: development through to long-term portfolio management
 - Long-term oriented, sustainable asset holding
 
+### Properties
+| Property | Owner | Repo |
+|----------|-------|------|
+| KG20 | BC Living GmbH | github.com/canyalaes/kg20 |
+| Canyala.es (villa) | Cas Mut Property KG | github.com/canyalaes/canyala.es |
+
 ### B8N (Private Equity)
 - Boutique investment manager / private equity
 - Mid-market acquisitions and growth opportunities in Australia
