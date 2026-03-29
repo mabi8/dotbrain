@@ -9,7 +9,7 @@ import {
 import { readFile, writeFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import { resolve } from "path";
-import { AZURE_CLIENT_ID, SCOPES, TOKEN_CACHE_DIR, AccountConfig } from "./config.js";
+import { SCOPES, TOKEN_CACHE_DIR, AccountConfig } from "./config.js";
 
 function getCachePath(alias: string): string {
   return resolve(TOKEN_CACHE_DIR, `${alias}.json`);
@@ -30,10 +30,10 @@ async function saveCache(pca: PublicClientApplication, alias: string): Promise<v
   await writeFile(cachePath, data, "utf-8");
 }
 
-function createPca(): PublicClientApplication {
+function createPca(clientId: string): PublicClientApplication {
   const config: Configuration = {
     auth: {
-      clientId: AZURE_CLIENT_ID!,
+      clientId,
       authority: "https://login.microsoftonline.com/common",
     },
   };
@@ -41,7 +41,7 @@ function createPca(): PublicClientApplication {
 }
 
 export async function login(account: AccountConfig): Promise<void> {
-  const pca = createPca();
+  const pca = createPca(account.clientId);
   await loadCache(pca, account.alias);
 
   const request: DeviceCodeRequest = {
@@ -60,7 +60,7 @@ export async function login(account: AccountConfig): Promise<void> {
 }
 
 export async function getAccessToken(account: AccountConfig): Promise<string> {
-  const pca = createPca();
+  const pca = createPca(account.clientId);
   await loadCache(pca, account.alias);
 
   const accounts = await pca.getTokenCache().getAllAccounts();

@@ -1,0 +1,261 @@
+/* McKinsey-inspired PDF stylesheet */
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&display=swap');
+
+@page {
+  size: A4;
+  margin: 20mm 20mm 22mm 20mm;
+
+  @bottom-right {
+    content: counter(page);
+    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-size: 7pt;
+    color: #999;
+  }
+
+  @bottom-left {
+    content: string(doc-title);
+    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-size: 7pt;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+@page :first {
+  margin-top: 38mm;
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+
+/* ── Base ── */
+
+:root {
+  --black-pearl: #051C2C;
+  --mckinsey-blue: #2251FF;
+  --dark: #1a1a1a;
+  --mid: #444;
+  --light: #999;
+  --border: #d0d0d0;
+  --bg-light: #f5f6f8;
+}
+
+html {
+  font-size: 9pt;
+  line-height: 1.45;
+  color: var(--dark);
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Title (H1 on first page) ── */
+
+h1 {
+  string-set: doc-title content();
+  font-family: "Source Serif 4", "Georgia", serif;
+  font-size: 20pt;
+  font-weight: 700;
+  color: var(--black-pearl);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 5mm 0;
+  padding-bottom: 3mm;
+  border-bottom: 2.5px solid var(--black-pearl);
+}
+
+/* ── Section headings ── */
+
+h2 {
+  font-family: "Source Serif 4", "Georgia", serif;
+  font-size: 14pt;
+  font-weight: 700;
+  color: var(--black-pearl);
+  margin: 7mm 0 3mm 0;
+  padding-bottom: 1.5mm;
+  border-bottom: 1px solid var(--border);
+  break-after: avoid;
+}
+
+h3 {
+  font-size: 10pt;
+  font-weight: 600;
+  color: var(--dark);
+  margin: 5mm 0 1.5mm 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  break-after: avoid;
+}
+
+h4 {
+  font-size: 9pt;
+  font-weight: 600;
+  color: var(--mid);
+  margin: 3mm 0 1.5mm 0;
+  break-after: avoid;
+}
+
+/* ── Body text ── */
+
+p {
+  margin: 0 0 2mm 0;
+  orphans: 3;
+  widows: 3;
+}
+
+strong {
+  font-weight: 600;
+  color: var(--dark);
+}
+
+em {
+  font-style: italic;
+}
+
+a {
+  color: var(--mckinsey-blue);
+  text-decoration: none;
+}
+
+/* ── Lists ── */
+
+ul, ol {
+  margin: 0 0 2mm 0;
+  padding-left: 5mm;
+}
+
+li {
+  margin-bottom: 1mm;
+}
+
+li > ul, li > ol {
+  margin-top: 1mm;
+  margin-bottom: 0;
+}
+
+/* ── Blockquotes (callout boxes) ── */
+
+blockquote {
+  margin: 3mm 0;
+  padding: 3mm 4mm;
+  background: var(--bg-light);
+  border-left: 2.5px solid var(--mckinsey-blue);
+  color: var(--mid);
+  font-style: italic;
+  break-inside: avoid;
+}
+
+blockquote p {
+  margin: 0;
+}
+
+/* ── Code ── */
+
+code {
+  font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+  font-size: 7.5pt;
+  background: var(--bg-light);
+  padding: 0.3mm 1mm;
+  border-radius: 2px;
+  color: var(--dark);
+}
+
+pre {
+  background: var(--black-pearl);
+  color: #d4d4d4;
+  padding: 3mm 4mm;
+  border-radius: 3px;
+  overflow-x: auto;
+  font-size: 7pt;
+  line-height: 1.4;
+  margin: 3mm 0;
+  break-inside: avoid;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* Pygments (dark pre) */
+.highlight .k, .highlight .kn, .highlight .kd { color: #c0c0c0; font-weight: bold; }
+.highlight .s, .highlight .s1, .highlight .s2 { color: #b0b0b0; }
+.highlight .c, .highlight .c1, .highlight .cm { color: #777; font-style: italic; }
+.highlight .n, .highlight .nf { color: #e0e0e0; }
+.highlight .o, .highlight .p { color: #ccc; }
+.highlight .mi, .highlight .mf { color: #ddd; }
+.highlight .nb { color: #bbb; }
+
+/* ── Tables ── */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 3mm 0;
+  font-size: 8pt;
+  break-inside: avoid;
+}
+
+thead {
+  background: var(--black-pearl);
+  color: #fff;
+}
+
+th {
+  font-weight: 600;
+  text-align: left;
+  padding: 2mm 2.5mm;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 7pt;
+}
+
+td {
+  padding: 1.5mm 2.5mm;
+  border-bottom: 0.5px solid var(--border);
+}
+
+tr:nth-child(even) {
+  background: var(--bg-light);
+}
+
+/* ── Horizontal rule (section divider / page break hint) ── */
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 5mm 0;
+}
+
+/* ── Images ── */
+
+img {
+  max-width: 100%;
+  display: block;
+  margin: 4mm auto;
+  break-inside: avoid;
+}
+
+/* ── Utility: explicit page break ── */
+
+.page-break {
+  break-before: page;
+}
+
+/* ── Footnotes (if using footnotes extension) ── */
+
+.footnote {
+  font-size: 8pt;
+  color: var(--light);
+}
+
+sup {
+  font-size: 7pt;
+  color: var(--mckinsey-blue);
+}

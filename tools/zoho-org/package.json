@@ -1,0 +1,20 @@
+{
+  "name": "zoho-org",
+  "version": "1.0.0",
+  "description": "CLI tool for Zoho Mail EU organization management (accounts, domains, groups)",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

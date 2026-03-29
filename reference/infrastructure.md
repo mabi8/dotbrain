@@ -3,7 +3,7 @@
 ## VPS Hosts
 
 ### box.makkib.com (Primary)
-- **IP:** 135.125.179.131
+- **IP:** 178.104.36.179
 - **OS:** Ubuntu
 - **Firewall:** iptables (NOT ufw) — always v4+v6
 - **Roles:** Self-hosted MCPs, BCL Telegram bot, Talvoss daemon
@@ -55,9 +55,10 @@ Auth: passphrase-gated OAuth. Bastion on sss SSHes into worker VPS. `hosts.json`
 - Bidrento grant page no user identity (low)
 
 **Planned:**
-- Dockerize services (medium)
+- Dockerize services via Kamal (see `reference/docker-standard.md`) (medium)
 - Grafana MCP server via grafana/mcp-grafana (medium)
 - vps-cmd per-user identity (low)
+- Evaluate SSS MCP role — Kamal from Claude Code replaces most bastion use cases
 
 ---
 

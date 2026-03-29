@@ -1,0 +1,197 @@
+Zero to One: Notes on Start Ups, or How to Build the Future
+Blake Masters and Peter Thiel
+
+I have noticed is that successful people find value in unexpected places, and they do this by thinking about business from first principles instead of formulas.
+LOCATION: 55
+
+Positively defined, a startup is the largest group of people you can convince of a plan to build a different future.
+LOCATION: 120
+
+Because that is what a startup has to do: question received ideas and rethink business from scratch.
+LOCATION: 123
+
+1. Make incremental advances Grand visions inflated the bubble, so they should not be indulged. Anyone who claims to be able to do something great is suspect, and anyone who wants to change the world should be more humble. Small,
+LOCATION: 212
+
+2. Stay lean and flexible All companies must be “lean,” which is code for “unplanned.” You should not know what your business will do; planning is arrogant and inflexible. Instead you should try things out, “iterate,” and treat entrepreneurship as agnostic experimentation.
+LOCATION: 214
+
+3. Improve on the competition Don’t try to create a new market prematurely. The only way to know you have a real business is to start with an already existing customer, so you should build your company by improving on recognizable products already offered by successful competitors.
+LOCATION: 217
+
+4. Focus on product, not sales If your product requires advertising or salespeople to sell it, it’s not good enough: technology is primarily about product development, not distribution.
+LOCATION: 219
+
+Bubble-era advertising was obviously wasteful, so the only sustainable growth is viral growth.
+LOCATION: 221
+
+And yet the opposite principles are probably more correct: 1. It is better to risk boldness than triviality. 2. A bad plan is better than no plan. 3. Competitive markets destroy profits. 4. Sales matters just as much as product.
+LOCATION: 223
+
+Creating value is not enough—you also need to capture some of the value you create.
+LOCATION: 238
+
+The lesson for entrepreneurs is clear: if you want to create and capture lasting value, don’t build an undifferentiated commodity business.
+LOCATION: 257
+
+The fatal temptation is to describe your market extremely narrowly so that you dominate it by definition.
+LOCATION: 285
+
+In business, money is either an important thing or it is everything.
+LOCATION: 323
+
+All happy companies are different: each one earns a monopoly by solving a unique problem. All failed companies are the same: they failed to escape competition.
+LOCATION: 358
+
+Competition means no profits for anybody, no meaningful differentiation, and a struggle for survival.
+LOCATION: 362
+
+we trap ourselves within it—even though the more we compete, the less we gain.
+LOCATION: 365
+
+The copy on the wrappers? “Summer is near. Oracle is here. To brighten your day and your career.”
+LOCATION: 432
+
+What explains the huge premium for Twitter? The answer is cash flow. This sounds bizarre at first, since the Times was profitable while Twitter wasn’t. But a great business is defined by its ability to generate cash flows in the future. Investors expect Twitter will be able to capture monopoly profits over the next decade, while newspapers’ monopoly days are over.
+LOCATION: 466
+
+but many entrepreneurs focus only on short-term growth. They have an excuse: growth is easy to measure, but durability isn’t.
+LOCATION: 488
+
+If you focus on near-term growth above all else, you miss the most important question you should be asking: will this business still be around a decade from now?
+LOCATION: 495
+
+Numbers alone won’t tell you the answer; instead you must think critically about the qualitative characteristics of your business.
+LOCATION: 496
+
+Every monopoly is unique, but they usually share some combination of the following characteristics: proprietary technology, network effects, economies of scale, and branding.
+LOCATION: 498
+
+The clearest way to make a 10x improvement is to invent something completely new. If you build something valuable where there was nothing before, the increase in value is theoretically infinite.
+LOCATION: 508
+
+This is why successful network businesses rarely get started by MBA types: the initial markets are so small that they often don’t even appear to be business opportunities at all.
+LOCATION: 531
+
+It manufactures products at a scale large enough to dominate pricing for the materials it buys.
+LOCATION: 549
+
+The perfect target market for a startup is a small group of particular people concentrated together and served by few or no competitors. Any big market is a bad choice, and a big market already served by competing companies is even worse. This is why it’s always a red flag when entrepreneurs talk about getting 1% of a $100 billion market.
+LOCATION: 569
+
+As you craft a plan to expand to adjacent markets, don’t disrupt: avoid competition as much as possible.
+LOCATION: 610
+
+In this one particular at least, business is like chess. Grandmaster José Raúl Capablanca put it well: to succeed, “you must study the endgame before everything else.”
+LOCATION: 617
+
+This is because venture returns don’t follow a normal distribution overall. Rather, they follow a power law: a small handful of companies radically outperform all others.
+LOCATION: 882
+
+This implies two very strange rules for VCs. First, only invest in companies that have the potential to return the value of the entire fund.
+LOCATION: 890
+
+Remember our contrarian question: what important truth do very few people agree with you on?
+LOCATION: 959
+
+Kaczynski argued that modern people are depressed because all the world’s hard problems have already been solved. What’s left to do is either easy or impossible, and pursuing those tasks is deeply unsatisfying.
+LOCATION: 982
+
+But the existence of financial bubbles shows that markets can have extraordinary inefficiencies. (And the more people believe in efficiency, the bigger the bubbles get.)
+LOCATION: 1029
+
+If you think something hard is impossible, you’ll never even start trying to achieve it. Belief in secrets is an effective truth.
+LOCATION: 1057
+
+There are two kinds of secrets: secrets of nature and secrets about people.
+LOCATION: 1073
+
+So when thinking about what kind of company to build, there are two distinct questions to ask: What secrets is nature not telling you? What secrets are people not telling you?
+LOCATION: 1075
+
+But you could also take the human approach and ask: what are people running companies not allowed to say?
+LOCATION: 1085
+
+The best entrepreneurs know this: every great business is built around a secret that’s hidden from the outside.
+LOCATION: 1102
+
+“Thiel’s law”: a startup messed up at its foundation cannot be fixed. Beginnings are special.
+LOCATION: 1112
+
+As a founder, your first job is to get the first things right, because you cannot build a great company on a flawed foundation.
+LOCATION: 1123
+
+Founders should share a prehistory before they start a company together—otherwise they’re just rolling dice.
+LOCATION: 1135
+
+To anticipate likely sources of misalignment in any company, it’s useful to distinguish between three concepts: • Ownership: who legally owns a company’s equity? • Possession: who actually runs the company on a day-to-day basis? • Control: who formally governs the company’s affairs?
+LOCATION: 1146
+
+The CEO of a huge company like General Motors, for example, will own some of the company’s stock, but only a trivial portion of the total. Therefore he’s incentivized to reward himself through the power of possession rather than the value of ownership.
+LOCATION: 1163
+
+A board of three is ideal. Your board should never exceed five people, unless your company is publicly held.
+LOCATION: 1175
+
+If you’re deciding whether to bring someone on board, the decision is binary. Ken Kesey was right: you’re either on the bus or off the bus.
+LOCATION: 1185
+
+A company does better the less it pays the CEO—that’s one of the single clearest patterns I’ve noticed from investing in hundreds of startups.
+LOCATION: 1188
+
+Company culture” doesn’t exist apart from the company itself: no company has a culture; every company is a culture.
+LOCATION: 1235
+
+Since time is your most valuable asset, it’s odd to spend it working with people who don’t envision any long-term future together.
+LOCATION: 1248
+
+They had to be talented, but even more than that they had to be excited about working specifically with us. That was the start of the PayPal Mafia.
+LOCATION: 1253
+
+More important than those obvious offerings is your answer to this question: Why should the 20th employee join your company?
+LOCATION: 1256
+
+You should ask yourself a more pointed version of the question: Why would someone join your company as its 20th engineer when she could go work at Google for more money and more prestige?
+LOCATION: 1258
+
+You’ll attract the employees you need if you can explain why your mission is compelling:
+LOCATION: 1264
+
+The startup uniform encapsulates a simple but essential principle: everyone at your company should be different in the same way—a tribe of like-minded people fiercely devoted to the company’s mission.
+LOCATION: 1279
+
+The best thing I did as a manager at PayPal was to make every person in the company responsible for doing just one thing.
+LOCATION: 1291
+
+The most fundamental reason that even businesspeople underestimate the importance of sales is the systematic effort to hide it at every level of every field in a world secretly driven by it.
+LOCATION: 1353
+
+Superior sales and distribution by itself can create a monopoly, even with no product differentiation. The converse is not true.
+LOCATION: 1361
+
+A complex sales approach would have made Box a forgotten startup failure; instead, personal sales made it a multibillion-dollar business.
+LOCATION: 1395
+
+The most valuable businesses of coming decades will be built by entrepreneurs who seek to empower people rather than try to make them obsolete.
+LOCATION: 1483
+
+PayPal in 2002: if humans and computers together could achieve dramatically better results than either could attain alone, what other valuable businesses could be built on this core principle?
+LOCATION: 1533
+
+Most cleantech companies crashed because they neglected one or more of the seven questions that every business must answer: 1. The Engineering Question Can you create breakthrough technology instead of incremental improvements? 2. The Timing Question Is now the right time to start your particular business? 3. The Monopoly Question Are you starting with a big share of a small market? 4. The People Question Do you have the right team? 5. The Distribution Question Do you have a way to not just create but deliver your product? 6. The Durability Question Will your market position be defensible 10 and 20 years into the future? 7. The Secret Question Have you identified a unique opportunity that others don’t see?
+LOCATION: 1607
+
+A great technology company should have proprietary technology an order of magnitude better than its nearest substitute.
+LOCATION: 1621
+
+“Internet-sized markets are in the billions of dollars; the energy markets are in the trillions.” What he didn’t say is that huge, trillion-dollar markets mean ruthless, bloody competition.
+LOCATION: 1643
+
+what will stop China from wiping out my business? Without an answer, the result shouldn’t have come as a surprise.
+LOCATION: 1705
+
+Paradoxically, the challenge for the entrepreneurs who will create Energy 2.0 is to think small.
+LOCATION: 1787
+
+The single greatest danger for a founder is to become so certain of his own myth that he loses his mind.
+LOCATION: 1924

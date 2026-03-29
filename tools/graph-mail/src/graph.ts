@@ -66,7 +66,7 @@ async function fetchConversationMessages(
   conversationId: string
 ): Promise<Message[]> {
   const messages: Message[] = [];
-  let url = `/me/messages?$filter=conversationId eq '${conversationId}'&$orderby=receivedDateTime asc&$top=50&$select=id,subject,body,sender,toRecipients,ccRecipients,receivedDateTime,hasAttachments`;
+  let url = `/me/messages?$filter=conversationId eq '${conversationId}'&$top=50&$select=id,subject,body,sender,toRecipients,ccRecipients,receivedDateTime,hasAttachments`;
 
   while (url) {
     const response = await client.api(url).get();
@@ -85,7 +85,6 @@ async function fetchAttachments(
 ): Promise<Attachment[]> {
   const response = await client
     .api(`/me/messages/${messageId}/attachments`)
-    .select("id,name,contentType,size,contentBytes,isInline")
     .get();
 
   return (response.value || []).filter(

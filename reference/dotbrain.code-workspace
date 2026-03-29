@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../canyala-automation"
+		},
+		{
+			"path": "../../octopus"
+		}
+	],
+	"settings": {}
+}

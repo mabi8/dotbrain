@@ -9,6 +9,7 @@ reference/
 │   ├── company.md        # Group structure, entities, key people
 │   ├── terminology.md    # Business terms, style rules
 │   └── standards.md      # Document formatting, compliance
+├── docker-standard.md    # Default Docker, Traefik, observability, remote management
 ├── infrastructure.md     # VPS hosts, MCP stack, services, monitoring, local dev
 ├── working-principles.md # How Markus + Claude collaborate, agentic workflow
 └── README.md             # This file

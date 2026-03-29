@@ -1,0 +1,65 @@
+Skin in the Game: Hidden Asymmetries in Daily Life
+Nassim Nicholas  Taleb
+
+“Conduct yourself toward your parents as you would have your children conduct themselves toward you.”
+LOCATION: 575
+
+You do not want to win an argument. You want to win.
+LOCATION: 643
+
+Because what matters in life isn’t how frequently one is “right” about outcomes, but how much one makes when one is right.
+LOCATION: 661
+
+Many kids would learn to love mathematics if they had some investment in it, and, more crucially, they would build an instinct to spot its misapplications.
+LOCATION: 775
+
+And I will keep mentioning that I have no other definition of success than leading an honorable life.
+LOCATION: 803
+
+Yossi Vardi, to have no assistant. The mere presence of an assistant suspends your natural filtering—and its absence forces you to do only things you enjoy, and progressively steer your life that way. (By
+LOCATION: 841
+
+“The Logic of Risk Taking,”
+LOCATION: 899
+
+So I accidentally discovered a way to change the behavior of unethical and abusive persons without verbal threat. Take their pictures. Just
+LOCATION: 3003
+
+Of course, I destroyed their pictures. But I never thought handhelds could be such a weapon.
+LOCATION: 3015
+
+methods originate with Roman legal reasoning.
+LOCATION: 3095
+
+Learning from the Russian school of probability makes one conscious of the need to think in terms of one-sided inequalities: what is absent from the data should be taken into account—absence of Black Swans in the record doesn’t mean these were not there.
+LOCATION: 3306
+
+“to make money you must first survive”—skin
+LOCATION: 3554
+
+the cognitive scientist and polymath Herb Simon, who pioneered artificial intelligence; the psychologist Gerd Gigerenzer; and the mathematician, logician, and decision theorist Ken Binmore, who spent his life formulating the logical foundations of rationality.
+LOCATION: 3567
+
+The only definition of rationality that I’ve found that is practically, empirically, and mathematically rigorous is the following: what is rational is that which allows for survival.
+LOCATION: 3636
+
+Not everything that happens happens for a reason, but everything that survives survives for a reason.
+LOCATION: 3662
+
+Rationality is risk management, period.
+LOCATION: 3663
+
+familiar principle that “in order to succeed, you must first survive.”
+LOCATION: 3691
+
+If medicine is progressively improving your life expectancy, you need to be even more paranoid. Think dynamically.
+LOCATION: 3741
+
+Risk and ruin are different tings.
+LOCATION: 3820
+
+The Chernoff bound can be explained as follows. The probability that the number of people who drown in their bathtubs in the United States doubles next year—assuming no changes in population or bathtubs—is one per several trillions lifetimes of the universe.
+LOCATION: 3833
+
+Finally: Rationality is avoidance of systemic ruin.
+LOCATION: 3858
