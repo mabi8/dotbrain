@@ -131,7 +131,7 @@ domains
       console.log(
         (d.domainName || "").padEnd(35) +
           (d.verificationStatus ? "yes" : "no").padEnd(12) +
-          (d.mxstatus === "verified" ? "yes" : "no").padEnd(10) +
+          (d.mxstatus === "verified" || d.mxstatus === "enabled" ? "yes" : "no").padEnd(10) +
           (d.spfstatus ? "yes" : "no").padEnd(10) +
           (d.dkimstatus ? "yes" : "no")
       );
@@ -169,12 +169,21 @@ domains
   .action(async (domain: string, opts) => {
     const config = getConfig();
     const res = await api.verifyDomain(config, domain, opts.method);
-    if (res.data?.status) {
+    if (res.data?.status === true || res.data?.errorCode === "DOMAIN_ALREADY_VERIFIED") {
       console.log(`Domain ${domain} verified.`);
     } else {
-      console.log(`Verification failed: ${res.data?.message || "unknown error"}`);
-      console.log(JSON.stringify(res.data, null, 2));
+      console.log(`Verification failed for ${domain}:`);
+      console.log(JSON.stringify(res.data || res, null, 2));
     }
+  });
+
+domains
+  .command("enable-hosting <domain>")
+  .description("Enable mail hosting for a domain")
+  .action(async (domain: string) => {
+    const config = getConfig();
+    const res = await api.enableMailHosting(config, domain);
+    console.log(JSON.stringify(res.data || res, null, 2));
   });
 
 domains
@@ -193,6 +202,43 @@ domains
     const config = getConfig();
     const res = await api.verifySPF(config, domain);
     console.log(JSON.stringify(res.data, null, 2));
+  });
+
+domains
+  .command("add-dkim <domain>")
+  .description("Generate DKIM key for domain")
+  .option("-s, --selector <selector>", "DKIM selector", "zoho")
+  .action(async (domain: string, opts) => {
+    const config = getConfig();
+    const res = await api.addDkim(config, domain, opts.selector);
+    const dkim = res.data?.dkimDetailList?.[0] || res.data;
+    if (dkim?.publicKey) {
+      console.log(`DKIM generated for ${domain}`);
+      console.log(`Selector: ${dkim.selector || opts.selector}`);
+      console.log(`TXT record: ${dkim.selector || opts.selector}._domainkey.${domain}`);
+      console.log(`Value: ${dkim.publicKey}`);
+    } else {
+      console.log(JSON.stringify(res.data || res, null, 2));
+    }
+  });
+
+domains
+  .command("verify-dkim <domain>")
+  .description("Verify DKIM record for domain")
+  .option("--dkim-id <id>", "DKIM ID (auto-detected if omitted)")
+  .action(async (domain: string, opts) => {
+    const config = getConfig();
+    let dkimId = opts.dkimId;
+    if (!dkimId) {
+      const domainInfo = await api.getDomain(config, domain);
+      dkimId = domainInfo.data?.dkimDetailList?.[0]?.dkimId;
+      if (!dkimId) {
+        console.error("No DKIM found for domain. Run add-dkim first.");
+        process.exit(1);
+      }
+    }
+    const res = await api.verifyDkim(config, domain, dkimId);
+    console.log(JSON.stringify(res.data || res, null, 2));
   });
 
 domains

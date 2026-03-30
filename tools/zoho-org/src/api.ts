@@ -20,12 +20,13 @@ async function request(
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`${method} ${path} failed: ${res.status} ${text}`);
+  const json = await res.json();
+
+  if (!res.ok && res.status !== 400) {
+    throw new Error(`${method} ${path} failed: ${res.status} ${JSON.stringify(json)}`);
   }
 
-  return res.json();
+  return json;
 }
 
 // === Accounts ===
@@ -110,15 +111,37 @@ export async function verifyDomain(
   });
 }
 
+export async function enableMailHosting(config: ZohoConfig, domain: string): Promise<any> {
+  return request(config, "PUT", `/api/organization/${config.zoid}/domains/${domain}`, {
+    mode: "enableMailHosting",
+  });
+}
+
 export async function verifyMx(config: ZohoConfig, domain: string): Promise<any> {
   return request(config, "PUT", `/api/organization/${config.zoid}/domains/${domain}`, {
-    mode: "verifyMXRecord",
+    mode: "verifyMxRecord",
   });
 }
 
 export async function verifySPF(config: ZohoConfig, domain: string): Promise<any> {
   return request(config, "PUT", `/api/organization/${config.zoid}/domains/${domain}`, {
-    mode: "verifySPFRecord",
+    mode: "verifySPF",
+  });
+}
+
+export async function addDkim(config: ZohoConfig, domain: string, selector: string = "zoho"): Promise<any> {
+  return request(config, "PUT", `/api/organization/${config.zoid}/domains/${domain}`, {
+    mode: "addDkimDetail",
+    selector,
+    isDefault: true,
+    keySize: 1024,
+  });
+}
+
+export async function verifyDkim(config: ZohoConfig, domain: string, dkimId: string): Promise<any> {
+  return request(config, "PUT", `/api/organization/${config.zoid}/domains/${domain}`, {
+    mode: "verifyDkimKey",
+    dkimId,
   });
 }
 

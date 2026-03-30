@@ -1,11 +1,34 @@
+import { readFileSync, writeFileSync, mkdirSync } from "fs";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
 import { AUTH_URL, ZohoConfig } from "./config.js";
 
-let cachedToken: string | null = null;
-let tokenExpiry = 0;
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const TOKEN_FILE = resolve(__dirname, "..", ".token-cache.json");
+
+interface TokenCache {
+  accessToken: string;
+  expiry: number;
+}
+
+function loadCache(): TokenCache | null {
+  try {
+    const data = JSON.parse(readFileSync(TOKEN_FILE, "utf-8"));
+    if (data.accessToken && data.expiry > Date.now()) {
+      return data;
+    }
+  } catch {}
+  return null;
+}
+
+function saveCache(cache: TokenCache): void {
+  writeFileSync(TOKEN_FILE, JSON.stringify(cache), "utf-8");
+}
 
 export async function getAccessToken(config: ZohoConfig): Promise<string> {
-  if (cachedToken && Date.now() < tokenExpiry) {
-    return cachedToken;
+  const cached = loadCache();
+  if (cached) {
+    return cached.accessToken;
   }
 
   const params = new URLSearchParams({
@@ -32,7 +55,10 @@ export async function getAccessToken(config: ZohoConfig): Promise<string> {
     process.exit(1);
   }
 
-  cachedToken = data.access_token;
-  tokenExpiry = Date.now() + (data.expires_in - 60) * 1000;
-  return cachedToken!;
+  const cache: TokenCache = {
+    accessToken: data.access_token,
+    expiry: Date.now() + (data.expires_in - 60) * 1000,
+  };
+  saveCache(cache);
+  return cache.accessToken;
 }

@@ -1,0 +1,26 @@
+b8n-holdings.com:
+  "--options":
+    preserve_remote: true
+  ".":
+    - type: MX
+      content: mx.zoho.eu
+      prio: 10
+    - type: MX
+      content: mx2.zoho.eu
+      prio: 20
+    - type: MX
+      content: mx3.zoho.eu
+      prio: 50
+    - type: TXT
+      content: "v=spf1 include:zoho.eu ~all"
+    - type: TXT
+      content: "zoho-verification=zb98219278.zmverify.zoho.eu"
+  zb98219278:
+    - type: CNAME
+      content: business.zoho.eu
+  _dmarc:
+    - type: TXT
+      content: "v=DMARC1; p=quarantine; rua=mailto:markus.binder@b8n.com; pct=100"
+  zoho._domainkey:
+    - type: TXT
+      content: "v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDfBzJYFNAqFruery9D4UaYGiH/aMGctKBnedR/5gLNN0Y8f/NPig4VYXvYa4guZtaftHjjklzNFLWsSeSIF28sBbXEhqYBNGhJcvl0vKyhP9liBDq9NK6m2agD1j9qxFJAONGf86VigGuKFge8hSdfw5uOmVCdzdylukdZmhFsOwIDAQAB"
