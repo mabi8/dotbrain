@@ -1,12 +1,20 @@
 import { Command } from "commander";
 import { getAccount } from "./config.js";
-import { login, getAccessToken } from "./auth.js";
+import { login, getAccessToken, getEwsAccessToken } from "./auth.js";
+import { EWS_SCOPES } from "./config.js";
 import {
   createGraphClient,
   searchEmails,
+  filterSearchEmails,
   fetchThread,
   downloadAttachments,
+  SearchResult,
 } from "./graph.js";
+import {
+  listArchiveFolders,
+  searchArchiveEmails,
+  fetchArchiveThread,
+} from "./ews.js";
 import { sendEmail, replyToEmail } from "./send.js";
 import {
   listEvents,
@@ -21,10 +29,39 @@ import {
 
 const program = new Command();
 
+function printSearchResults(results: SearchResult[]) {
+  console.log(`\n${results.length} result(s):\n`);
+  console.log(
+    "Date".padEnd(12) + "From".padEnd(35) + "Att".padEnd(5) + "Subject"
+  );
+  console.log("-".repeat(90));
+
+  for (const r of results) {
+    const date = r.receivedDateTime.split("T")[0];
+    const att = r.hasAttachments ? " \u{1f4ce}" : "   ";
+    console.log(
+      date.padEnd(12) +
+        r.sender.slice(0, 33).padEnd(35) +
+        att.padEnd(5) +
+        (r.subject ?? "(no subject)").slice(0, 60)
+    );
+  }
+
+  console.log(`\nConversation IDs (for --conversation-id):`);
+  const seen = new Set<string>();
+  for (const r of results) {
+    if (!seen.has(r.conversationId)) {
+      seen.add(r.conversationId);
+      console.log(`  ${(r.subject ?? "(no subject)").slice(0, 60)}`);
+      console.log(`    ${r.conversationId}`);
+    }
+  }
+}
+
 program
   .name("graph-mail")
   .description("CLI tool for Microsoft 365 email & calendar via Graph API")
-  .version("1.1.0");
+  .version("1.2.0");
 
 // login
 program
@@ -34,6 +71,44 @@ program
   .action(async (opts) => {
     const account = getAccount(opts.account);
     await login(account);
+  });
+
+// login-ews
+program
+  .command("login-ews")
+  .description("Authenticate for EWS access (online archive)")
+  .requiredOption("-a, --account <alias>", "Account alias (b8n or boc)")
+  .action(async (opts) => {
+    const account = getAccount(opts.account);
+    await login(account, EWS_SCOPES);
+  });
+
+// archive-folders
+program
+  .command("archive-folders")
+  .description("List folders in the online archive (via EWS)")
+  .requiredOption("-a, --account <alias>", "Account alias (b8n or boc)")
+  .action(async (opts) => {
+    const account = getAccount(opts.account);
+    const token = await getEwsAccessToken(account);
+    const folders = await listArchiveFolders(token);
+
+    if (folders.length === 0) {
+      console.log("No folders found in online archive.");
+      return;
+    }
+
+    console.log(
+      "Folder".padEnd(40) + "Items".padStart(8) + "  Children"
+    );
+    console.log("-".repeat(60));
+    for (const f of folders) {
+      console.log(
+        f.displayName.slice(0, 38).padEnd(40) +
+          String(f.totalCount).padStart(8) +
+          String(f.childFolderCount).padStart(10)
+      );
+    }
   });
 
 // search
@@ -46,44 +121,68 @@ program
   .option("--archive", "Search online archive instead of primary mailbox")
   .action(async (opts) => {
     const account = getAccount(opts.account);
-    const token = await getAccessToken(account);
-    const client = createGraphClient(token);
-    const results = await searchEmails(client, opts.query, parseInt(opts.limit), opts.archive);
+    let results;
+
+    if (opts.archive) {
+      const token = await getEwsAccessToken(account);
+      results = await searchArchiveEmails(token, {
+        keyword: opts.query,
+        limit: parseInt(opts.limit),
+      });
+    } else {
+      const token = await getAccessToken(account);
+      const client = createGraphClient(token);
+      results = await searchEmails(client, opts.query, parseInt(opts.limit));
+    }
 
     if (results.length === 0) {
       console.log("No results found.");
       return;
     }
 
-    console.log(`\n${results.length} result(s):\n`);
-    console.log(
-      "Date".padEnd(12) +
-        "From".padEnd(35) +
-        "Att".padEnd(5) +
-        "Subject"
-    );
-    console.log("-".repeat(90));
+    printSearchResults(results);
+  });
 
-    for (const r of results) {
-      const date = r.receivedDateTime.split("T")[0];
-      const att = r.hasAttachments ? " \u{1f4ce}" : "   ";
-      console.log(
-        date.padEnd(12) +
-          r.sender.slice(0, 33).padEnd(35) +
-          att.padEnd(5) +
-          r.subject.slice(0, 60)
+// filter-search (date-range aware)
+program
+  .command("filter-search")
+  .description("Search emails within a date range")
+  .requiredOption("-a, --account <alias>", "Account alias (b8n or boc)")
+  .requiredOption("-k, --keyword <keyword>", "Keyword to match in subject")
+  .requiredOption("--from <date>", "Start date (YYYY-MM-DD)")
+  .requiredOption("--to <date>", "End date (YYYY-MM-DD)")
+  .option("-l, --limit <n>", "Max matching results", "200")
+  .option("--archive", "Search online archive instead of primary mailbox")
+  .action(async (opts) => {
+    const account = getAccount(opts.account);
+    let results;
+
+    if (opts.archive) {
+      const token = await getEwsAccessToken(account);
+      results = await searchArchiveEmails(token, {
+        keyword: opts.keyword,
+        dateFrom: opts.from,
+        dateTo: opts.to,
+        limit: parseInt(opts.limit),
+      });
+    } else {
+      const token = await getAccessToken(account);
+      const client = createGraphClient(token);
+      results = await filterSearchEmails(
+        client,
+        opts.keyword,
+        opts.from,
+        opts.to,
+        parseInt(opts.limit)
       );
     }
 
-    console.log(
-      `\nConversation IDs (for --conversation-id):`
-    );
-    const convIds = [...new Set(results.map((r) => r.conversationId))];
-    for (const id of convIds.slice(0, 5)) {
-      const first = results.find((r) => r.conversationId === id)!;
-      console.log(`  ${first.subject.slice(0, 60)}`);
-      console.log(`    ${id}`);
+    if (results.length === 0) {
+      console.log("No results found.");
+      return;
     }
+
+    printSearchResults(results);
   });
 
 // thread
@@ -102,22 +201,42 @@ program
     }
 
     const account = getAccount(opts.account);
-    const token = await getAccessToken(account);
-    const client = createGraphClient(token);
 
-    let conversationId = opts.conversationId;
+    if (opts.archive) {
+      const token = await getEwsAccessToken(account);
+      let conversationId = opts.conversationId;
 
-    if (!conversationId) {
-      const results = await searchEmails(client, opts.query, 10, opts.archive);
-      if (results.length === 0) {
-        console.error("No emails found matching query.");
-        process.exit(1);
+      if (!conversationId) {
+        const results = await searchArchiveEmails(token, {
+          keyword: opts.query,
+          limit: 10,
+        });
+        if (results.length === 0) {
+          console.error("No emails found matching query in archive.");
+          process.exit(1);
+        }
+        conversationId = results[0].conversationId;
+        console.log(`Found thread: ${results[0].subject}`);
       }
-      conversationId = results[0].conversationId;
-      console.log(`Found thread: ${results[0].subject}`);
-    }
 
-    await fetchThread(client, conversationId, opts.output, opts.archive);
+      await fetchArchiveThread(token, conversationId, opts.output);
+    } else {
+      const token = await getAccessToken(account);
+      const client = createGraphClient(token);
+      let conversationId = opts.conversationId;
+
+      if (!conversationId) {
+        const results = await searchEmails(client, opts.query, 10);
+        if (results.length === 0) {
+          console.error("No emails found matching query.");
+          process.exit(1);
+        }
+        conversationId = results[0].conversationId;
+        console.log(`Found thread: ${results[0].subject}`);
+      }
+
+      await fetchThread(client, conversationId, opts.output);
+    }
   });
 
 // attachments

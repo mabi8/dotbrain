@@ -9,7 +9,7 @@ import {
 import { readFile, writeFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import { resolve } from "path";
-import { SCOPES, TOKEN_CACHE_DIR, AccountConfig } from "./config.js";
+import { SCOPES, EWS_SCOPES, TOKEN_CACHE_DIR, AccountConfig } from "./config.js";
 
 function getCachePath(alias: string): string {
   return resolve(TOKEN_CACHE_DIR, `${alias}.json`);
@@ -40,12 +40,12 @@ function createPca(clientId: string): PublicClientApplication {
   return new PublicClientApplication(config);
 }
 
-export async function login(account: AccountConfig): Promise<void> {
+export async function login(account: AccountConfig, scopes?: string[]): Promise<void> {
   const pca = createPca(account.clientId);
   await loadCache(pca, account.alias);
 
   const request: DeviceCodeRequest = {
-    scopes: SCOPES,
+    scopes: scopes || SCOPES,
     deviceCodeCallback: (response) => {
       console.log("\n" + response.message + "\n");
     },
@@ -59,7 +59,7 @@ export async function login(account: AccountConfig): Promise<void> {
   }
 }
 
-export async function getAccessToken(account: AccountConfig): Promise<string> {
+async function acquireToken(account: AccountConfig, scopes: string[]): Promise<string> {
   const pca = createPca(account.clientId);
   await loadCache(pca, account.alias);
 
@@ -76,7 +76,7 @@ export async function getAccessToken(account: AccountConfig): Promise<string> {
   }
 
   const silentRequest: SilentFlowRequest = {
-    scopes: SCOPES,
+    scopes,
     account: matchedAccount,
   };
 
@@ -90,4 +90,12 @@ export async function getAccessToken(account: AccountConfig): Promise<string> {
     );
     process.exit(1);
   }
+}
+
+export async function getAccessToken(account: AccountConfig): Promise<string> {
+  return acquireToken(account, SCOPES);
+}
+
+export async function getEwsAccessToken(account: AccountConfig): Promise<string> {
+  return acquireToken(account, EWS_SCOPES);
 }

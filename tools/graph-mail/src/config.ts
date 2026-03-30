@@ -15,6 +15,10 @@ export const SCOPES = [
   "User.Read",
 ];
 
+export const EWS_SCOPES = [
+  "https://outlook.office.com/EWS.AccessAsUser.All",
+];
+
 export interface AccountConfig {
   alias: string;
   email: string;

@@ -42,6 +42,54 @@ export async function searchEmails(
   }));
 }
 
+export async function filterSearchEmails(
+  client: Client,
+  keyword: string,
+  dateFrom: string,
+  dateTo: string,
+  limit: number = 200,
+  archive: boolean = false
+): Promise<SearchResult[]> {
+  const basePath = archive ? "/me/mailFolders/archive/messages" : "/me/messages";
+  const filter = `receivedDateTime ge ${dateFrom}T00:00:00Z and receivedDateTime le ${dateTo}T23:59:59Z`;
+  const kw = keyword.toLowerCase();
+  const results: SearchResult[] = [];
+  let url: string | null = null;
+  let pageSize = Math.min(limit, 1000);
+
+  // First request
+  let response = await client
+    .api(basePath)
+    .filter(filter)
+    .top(pageSize)
+    .orderby("receivedDateTime desc")
+    .select("id,subject,conversationId,receivedDateTime,sender,hasAttachments")
+    .get();
+
+  while (true) {
+    const messages = response.value || [];
+    for (const msg of messages) {
+      const subject = (msg.subject || "").toLowerCase();
+      if (subject.includes(kw)) {
+        results.push({
+          id: msg.id,
+          subject: msg.subject,
+          conversationId: msg.conversationId,
+          receivedDateTime: msg.receivedDateTime,
+          sender: msg.sender?.emailAddress?.address || "unknown",
+          hasAttachments: msg.hasAttachments,
+        });
+        if (results.length >= limit) return results;
+      }
+    }
+    url = response["@odata.nextLink"] || null;
+    if (!url) break;
+    response = await client.api(url).get();
+  }
+
+  return results;
+}
+
 interface Message {
   id: string;
   subject: string;
@@ -98,7 +146,7 @@ async function fetchAttachments(
   );
 }
 
-function isDocumentType(contentType: string): boolean {
+export function isDocumentType(contentType: string): boolean {
   const docTypes = [
     "application/pdf",
     "application/msword",
@@ -109,13 +157,13 @@ function isDocumentType(contentType: string): boolean {
   return docTypes.some((t) => contentType.startsWith(t));
 }
 
-function formatSize(bytes: number): string {
+export function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes}B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)}KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
 }
 
-function formatRecipients(
+export function formatRecipients(
   recipients: { emailAddress: { address: string; name: string } }[]
 ): string {
   return recipients
@@ -123,7 +171,7 @@ function formatRecipients(
     .join(", ");
 }
 
-function bodyToText(body: { contentType: string; content: string }): string {
+export function bodyToText(body: { contentType: string; content: string }): string {
   if (body.contentType === "text") return body.content.trim();
   return convert(body.content, {
     wordwrap: 120,

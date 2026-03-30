@@ -30,9 +30,40 @@ This symlinks `CLAUDE.md` and `.cursorrules` from the appropriate templates into
 
 ## Graph Mail Tool
 
-Location: `~/tools/graph-mail`
-Usage: `npx tsx src/index.ts thread --account b8n|boc --query "search terms" --output ./output/{name}`
+Location: `tools/graph-mail/`
+Usage: `npx tsx ~/repos/dotbrain/tools/graph-mail/src/index.ts <command>`
 Fetches M365 email threads with attachments to local files for analysis. Can also send emails, create draft replies in Outlook, and manage calendar events.
+
+Supports two auth contexts:
+- **Graph API** (default): primary mailbox — `login --account <alias>`
+- **EWS** (`--archive` flag): online archive mailbox — `login-ews --account <alias>`
+
+The online archive (In-Place Archive) is **not accessible via Graph API**. The `--archive` flag transparently routes through EWS SOAP. EWS requires the `EWS.AccessAsUser.All` delegated permission on the Azure app registration (resource: Office 365 Exchange Online), with admin consent granted.
+
+Archive search uses subject-based conversation threading (not ConversationId, which the archive doesn't expose). Thread fetching via `--archive` groups messages by subject topic.
+
+Commands:
+```bash
+# Auth
+graph-mail login -a boc                       # Graph API (primary mailbox)
+graph-mail login-ews -a boc                   # EWS (online archive)
+
+# Search (add --archive for online archive)
+graph-mail search -a boc -q "search terms"
+graph-mail filter-search -a boc -k "keyword" --from 2023-01-01 --to 2024-12-31
+graph-mail search -a boc -q "keyword" --archive
+
+# Threads
+graph-mail thread -a boc -q "query" -o ./output/name
+graph-mail thread -a boc -c "conversation-id-or-topic" -o ./output/name --archive
+
+# Archive folder listing
+graph-mail archive-folders -a boc
+
+# Send/Reply (always primary mailbox)
+graph-mail send -a boc --to addr -s "Subject" -b body.md
+graph-mail reply -a boc -m <message-id> -b body.md
+```
 
 ## MD to PDF Tool
 
@@ -102,6 +133,29 @@ zoho-org domains verify-mx example.com
 zoho-org groups list                  # List groups
 zoho-org groups add -e team@dom -n Team  # Create group
 ```
+
+## SQ Awards Tool
+
+Location: `tools/sq-awards/`
+Usage: `npx tsx ~/repos/dotbrain/tools/sq-awards/src/index.ts <command>`
+Credentials: `tools/sq-awards/.env` (copy from `.env.example`)
+
+Searches Singapore Airlines KrisFlyer award seat availability via Playwright (browser-based, PPS Club login for full inventory visibility).
+
+Setup:
+1. Copy `.env.example` to `.env`, fill in `SQ_KRISFLYER_ID` and `SQ_KRISFLYER_PIN`
+2. Run `login` command first to establish session cookies
+
+Commands:
+```bash
+sq-awards login                                          # Login and save session
+sq-awards search --origin SYD --destination SIN --date 2026-07-01 --cabin business
+sq-awards scan --date 2026-07-01                         # Scan all default routes (SYD-SIN, SIN-FRA/MUC/BCN/ZRH)
+sq-awards scan --date 2026-07-01 --return-date 2026-07-20  # Include FRA-SIN return
+sq-awards scan --date 2026-07-01 --routes SYD-SIN,SIN-FRA  # Filter specific routes
+```
+
+Default routes: SYD→SIN (late afternoon), SIN→FRA/MUC/BCN/ZRH, return FRA→SIN (evening).
 
 ## Conventions
 
