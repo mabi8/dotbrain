@@ -43,11 +43,12 @@ program
   .requiredOption("-a, --account <alias>", "Account alias (b8n or boc)")
   .requiredOption("-q, --query <query>", "Search query")
   .option("-l, --limit <n>", "Max results", "20")
+  .option("--archive", "Search online archive instead of primary mailbox")
   .action(async (opts) => {
     const account = getAccount(opts.account);
     const token = await getAccessToken(account);
     const client = createGraphClient(token);
-    const results = await searchEmails(client, opts.query, parseInt(opts.limit));
+    const results = await searchEmails(client, opts.query, parseInt(opts.limit), opts.archive);
 
     if (results.length === 0) {
       console.log("No results found.");
@@ -93,6 +94,7 @@ program
   .option("-q, --query <query>", "Search query to find the thread")
   .option("-c, --conversation-id <id>", "Direct conversation ID")
   .requiredOption("-o, --output <dir>", "Output directory")
+  .option("--archive", "Search online archive instead of primary mailbox")
   .action(async (opts) => {
     if (!opts.query && !opts.conversationId) {
       console.error("Provide either --query or --conversation-id");
@@ -106,7 +108,7 @@ program
     let conversationId = opts.conversationId;
 
     if (!conversationId) {
-      const results = await searchEmails(client, opts.query, 10);
+      const results = await searchEmails(client, opts.query, 10, opts.archive);
       if (results.length === 0) {
         console.error("No emails found matching query.");
         process.exit(1);
@@ -115,7 +117,7 @@ program
       console.log(`Found thread: ${results[0].subject}`);
     }
 
-    await fetchThread(client, conversationId, opts.output);
+    await fetchThread(client, conversationId, opts.output, opts.archive);
   });
 
 // attachments

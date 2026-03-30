@@ -21,10 +21,12 @@ export interface SearchResult {
 export async function searchEmails(
   client: Client,
   query: string,
-  limit: number = 20
+  limit: number = 20,
+  archive: boolean = false
 ): Promise<SearchResult[]> {
+  const basePath = archive ? "/me/mailFolders/archive/messages" : "/me/messages";
   const response = await client
-    .api("/me/messages")
+    .api(basePath)
     .query({ $search: `"${query}"` })
     .top(limit)
     .select("id,subject,conversationId,receivedDateTime,sender,hasAttachments")
@@ -63,10 +65,12 @@ interface Attachment {
 
 async function fetchConversationMessages(
   client: Client,
-  conversationId: string
+  conversationId: string,
+  archive: boolean = false
 ): Promise<Message[]> {
   const messages: Message[] = [];
-  let url = `/me/messages?$filter=conversationId eq '${conversationId}'&$top=50&$select=id,subject,body,sender,toRecipients,ccRecipients,receivedDateTime,hasAttachments`;
+  const basePath = archive ? "/me/mailFolders/archive/messages" : "/me/messages";
+  let url = `${basePath}?$filter=conversationId eq '${conversationId}'&$top=50&$select=id,subject,body,sender,toRecipients,ccRecipients,receivedDateTime,hasAttachments`;
 
   while (url) {
     const response = await client.api(url).get();
@@ -133,9 +137,10 @@ function bodyToText(body: { contentType: string; content: string }): string {
 export async function fetchThread(
   client: Client,
   conversationId: string,
-  outputDir: string
+  outputDir: string,
+  archive: boolean = false
 ): Promise<void> {
-  const messages = await fetchConversationMessages(client, conversationId);
+  const messages = await fetchConversationMessages(client, conversationId, archive);
 
   if (messages.length === 0) {
     console.error("No messages found for this conversation.");
