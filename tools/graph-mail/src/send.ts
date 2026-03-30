@@ -184,15 +184,21 @@ export async function replyToEmail(
 
     const draft = await client.api(createEndpoint).post({});
 
-    // Update draft with body and attachments
+    // Prepend new body to the quoted original (which createReply/createReplyAll puts in draft.body)
+    const quotedBody = draft.body?.content || "";
+    const combinedHtml = body.html + quotedBody;
+
+    // Update draft body
     const update: any = {
-      body: { contentType: "HTML", content: body.html },
+      body: { contentType: "HTML", content: combinedHtml },
     };
-    if (attachments.length) {
-      update.attachments = attachments;
-    }
 
     await client.api(`/me/messages/${draft.id}`).patch(update);
+
+    // Add attachments separately (Graph API requires POST to /attachments endpoint)
+    for (const att of attachments) {
+      await client.api(`/me/messages/${draft.id}/attachments`).post(att);
+    }
 
     console.log(`\u2705 Draft reply created in Outlook. Open Outlook to review and send.`);
     console.log(`   Draft ID: ${draft.id}`);
