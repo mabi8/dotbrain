@@ -134,6 +134,44 @@ zoho-org groups list                  # List groups
 zoho-org groups add -e team@dom -n Team  # Create group
 ```
 
+## CenterDevice Upload Tool
+
+Location: `tools/centerdevice-upload/`
+Usage: `npx tsx ~/repos/dotbrain/tools/centerdevice-upload/src/index.ts <command>`
+Credentials: `tools/centerdevice-upload/.env` (copy from `.env.example`)
+
+Uploads local files directly to CenterDevice via multipart POST. Bypasses the MCP base64 limitation — works with real files of any size.
+
+Setup:
+1. Copy `.env.example` to `.env`
+2. Fill in `CD_CLIENT_ID`, `CD_CLIENT_SECRET` (same OAuth app as mcp-stack centerdevice)
+3. Obtain a refresh token via the CenterDevice OAuth flow, set `CD_REFRESH_TOKEN`
+
+Commands:
+```bash
+# Verify credentials
+cd-upload whoami
+
+# Upload files (single, multiple, or directory)
+cd-upload upload invoice.pdf --collection <id> --folder <id> --tag BOC
+cd-upload upload *.pdf -c <collection-id> -f <folder-id>
+cd-upload upload ./scans/ -c <collection-id> -t BOC -t "Steuer"
+
+# Upload new version of existing document
+cd-upload upload-version <document-id> updated-file.pdf
+
+# Browse structure (find collection/folder IDs)
+cd-upload collections
+cd-upload folders -c <collection-id>
+cd-upload folders -p <parent-folder-id>
+
+# Search documents
+cd-upload search "Kontoauszug" -c <collection-id>
+
+# Dry run (show what would be uploaded)
+cd-upload upload ./scans/ -c <id> -f <id> --dry
+```
+
 ## SQ Awards Tool
 
 Location: `tools/sq-awards/`
@@ -148,11 +186,14 @@ Setup:
 
 Commands:
 ```bash
-sq-awards login                                          # Login and save session
-sq-awards search --origin SYD --destination SIN --date 2026-07-01 --cabin business
-sq-awards scan --date 2026-07-01                         # Scan all default routes (SYD-SIN, SIN-FRA/MUC/BCN/ZRH)
-sq-awards scan --date 2026-07-01 --return-date 2026-07-20  # Include FRA-SIN return
-sq-awards scan --date 2026-07-01 --routes SYD-SIN,SIN-FRA  # Filter specific routes
+# Login (opens browser window — solve CAPTCHA if needed, session auto-detected)
+sq-awards login
+
+# Search (use xvfb-run for no visible window; SQ blocks headless browsers)
+xvfb-run sq-awards search --origin SYD --destination SIN --date 2026-07-01 --cabin business
+xvfb-run sq-awards scan --date 2026-07-01                         # All default routes
+xvfb-run sq-awards scan --date 2026-07-01 --return-date 2026-07-20  # Include FRA-SIN return
+xvfb-run sq-awards scan --date 2026-07-01 --routes SYD-SIN,SIN-FRA  # Filter routes
 ```
 
 Default routes: SYD→SIN (late afternoon), SIN→FRA/MUC/BCN/ZRH, return FRA→SIN (evening).
