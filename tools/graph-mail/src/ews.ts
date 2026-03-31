@@ -540,6 +540,15 @@ export async function fetchArchiveThread(
   const threadPath = join(outputDir, "thread.md");
   await writeFile(threadPath, md, "utf-8");
 
+  // Write message metadata sidecar (newest-first for easy reply)
+  const messageMeta = [...messages].reverse().map((msg) => ({
+    id: msg.id,
+    date: msg.receivedDateTime,
+    from: msg.sender.address,
+    subject: msg.subject,
+  }));
+  await writeFile(join(outputDir, "messages.json"), JSON.stringify(messageMeta, null, 2), "utf-8");
+
   console.log(`Thread saved to ${threadPath}`);
   console.log(`  ${messages.length} messages, ${allAttachments.length} attachments`);
 }

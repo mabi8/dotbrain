@@ -47,6 +47,13 @@ function printSearchResults(results: SearchResult[]) {
     );
   }
 
+  console.log(`\nMessage IDs (for --message-id / reply):`);
+  for (const r of results) {
+    const date = r.receivedDateTime.split("T")[0];
+    console.log(`  ${date} ${r.sender.slice(0, 30)}`);
+    console.log(`    ${r.id}`);
+  }
+
   console.log(`\nConversation IDs (for --conversation-id):`);
   const seen = new Set<string>();
   for (const r of results) {
