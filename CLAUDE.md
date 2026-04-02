@@ -140,17 +140,23 @@ Location: `tools/centerdevice-upload/`
 Usage: `npx tsx ~/repos/dotbrain/tools/centerdevice-upload/src/index.ts <command>`
 Credentials: `tools/centerdevice-upload/.env` (copy from `.env.example`)
 
-Uploads local files directly to CenterDevice via multipart POST. Bypasses the MCP base64 limitation — works with real files of any size.
+Uploads and downloads files to/from CenterDevice. Bypasses the MCP base64 limitation — works with real files of any size.
 
 Setup:
-1. Copy `.env.example` to `.env`
-2. Fill in `CD_CLIENT_ID`, `CD_CLIENT_SECRET` (same OAuth app as mcp-stack centerdevice)
-3. Obtain a refresh token via the CenterDevice OAuth flow, set `CD_REFRESH_TOKEN`
+1. Copy `.env.example` to `.env`, fill in `CD_CLIENT_ID` and `CD_CLIENT_SECRET` (same OAuth app as mcp-stack centerdevice)
+2. Run `cd-upload login` — opens browser OAuth flow, paste the callback URL to complete
 
 Commands:
 ```bash
+# Auth (browser OAuth, paste callback URL)
+cd-upload login
+
 # Verify credentials
 cd-upload whoami
+
+# Download documents by ID
+cd-upload download <document-id> -o ./output/
+cd-upload download <id1> <id2> <id3> -o ./output/
 
 # Upload files (single, multiple, or directory)
 cd-upload upload invoice.pdf --collection <id> --folder <id> --tag BOC
@@ -197,6 +203,58 @@ xvfb-run sq-awards scan --date 2026-07-01 --routes SYD-SIN,SIN-FRA  # Filter rou
 ```
 
 Default routes: SYD→SIN (late afternoon), SIN→FRA/MUC/BCN/ZRH, return FRA→SIN (evening).
+
+## DocuSign Send Tool
+
+Location: `tools/docusign-send/`
+Usage: `npx tsx ~/repos/dotbrain/tools/docusign-send/src/index.ts <command>`
+Credentials: `tools/docusign-send/.env` (copy from `.env.example`)
+
+Sends documents for signature via DocuSign eSignature REST API. Uses JWT (RS256) for server-to-server auth.
+
+Setup:
+1. Copy `.env.example` to `.env`, fill in `DS_INTEGRATION_KEY`, `DS_USER_ID`, `DS_ACCOUNT_ID`, `DS_BASE_URI`
+2. Place RSA private key as `tools/docusign-send/private.key`
+3. Grant JWT consent once: open `https://<auth-host>/oauth/auth?response_type=code&scope=signature%20impersonation&client_id=<integration-key>&redirect_uri=http://localhost:3000/callback` and click Allow
+
+Auth hosts: `account-d.docusign.com` (sandbox), `account.docusign.com` (production)
+
+Commands:
+```bash
+# Verify credentials
+docusign-send whoami
+
+# Send document for signature (free-form signing by default)
+docusign-send send contract.pdf --to "Name <email>"
+docusign-send send contract.pdf --to "Alice <a@x.com>" --to "Bob <b@x.com>"
+
+# Send with anchor placeholders (/sn1/, /dt1/, /nm1/ for signer 1, etc.)
+docusign-send send contract.pdf --to "Alice <a@x.com>" --anchors
+
+# Create draft instead of sending immediately
+docusign-send send contract.pdf --to "Name <email>" --draft
+
+# CC recipients
+docusign-send send doc.pdf --to "Signer <s@x.com>" --cc "Copy <c@x.com>"
+
+# List recent envelopes
+docusign-send list
+docusign-send list --status completed --from 2026-01-01
+
+# Check envelope status
+docusign-send status <envelope-id>
+
+# Download signed documents
+docusign-send download <envelope-id> -o ./output/
+
+# Void an in-progress envelope
+docusign-send void <envelope-id> -r "Reason"
+```
+
+Anchor placeholders (use `--anchors` flag):
+- `/sn1/`, `/sn2/` — signature fields per signer
+- `/dt1/`, `/dt2/` — date signed fields
+- `/nm1/`, `/nm2/` — full name fields
 
 ## Conventions
 
