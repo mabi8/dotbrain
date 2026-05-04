@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<title></title>
+	<meta charset="UTF-8">
+	<meta name="robots" content="noindex">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" href="customize/favicon" type="image/png" />
+	<link rel="stylesheet" type="text/css" href="content/css/main.css?20250423">
+	<link rel="stylesheet" type="text/css" href="content/css/fontstyle.css?20250423">
+	<link rel="stylesheet" type="text/css" href="customize/css">
+	<script src="scripts/url-polyfill.min.js"></script>
+	<script src="scripts/fetch-polyfill.min.js"></script>
+	<script src="scripts/promise-polyfill.min.js"></script>
+	<script src="scripts/okta-auth-js.min.js"></script>
+	<script src="scripts/css-vars-ponyfill.js"></script>
+	<script src="scripts/util.js?20250423"></script>
+	<script src="scripts/QplixLogin.js?20250423"></script>
+	<script src="scripts/customize.js?20250423"></script>
+</head>
+<body>
+	<div class="container-login" id="container-login">
+		<div class="container-login-bg" id="container-login-bg"></div>
+		<div style="width:100%; display: none;" id="bannerWrap">
+			<div class="wrap-banner">
+				<div id="banner"></div>
+			</div>
+		</div>
+		<div class="wrap-login" id="wrap-login" style="display:none">
+			<div class="system">
+				<div class="header-logo">
+					<p class="login-logo" >
+						<img src="customize/logo" id="img-logo" class="img-logo">
+					</p>
+				</div>
+	
+				<form class="login-form" id="ssoForm" autocomplete="off" onsubmit="authorizeSSO(); return false;" action="#">
+					<div class="container-login-form-btn sso" id="SSOPanel" style="display: none" >
+						<button class="login-form-btn" type="submit" id="ssoButton">
+							<i class="material-icons">login</i> SSO Login
+						</button>
+						</div>
+				</form>
+
+				<form class="login-form" id="loginForm" autocomplete="off" onsubmit="authorize(); return false;" action="#">
+					<div class="browser-warning" id="browserWarning">
+						<small>
+							<strong style="color: red;" data-i18n="pleaseNote">Please note:</strong>
+							<span id="browserWarningText" 
+								  placeholder="You are currently using an unsupported browser or outdated browser version. Please update to the latest browser version of Google Chrome or Mozilla Firefox for optimized content display." 
+								  data-i18n-placeholder="error.outdatedBrowser">
+							</span>
+						</small>
+					</div>
+					<div class="app-login-hint" id="appLoginHint">
+						<small>
+							<strong style="color: red;" data-i18n="pleaseNote">Please note:</strong>
+							<span id="appLoginHintText"
+								  data-i18n="error.appLoginHint">
+								  This log-in is for an external application. You will get further details on the next page
+							</span>
+						</small>
+					</div>
+
+					<span class="login-title"><!--Anmelden--></span>
+					<span class="alert" style="color: red; display: none" id="timeDiffSpan"></span>
+	
+					<div class="wrap-input" data-validate="Enter username" id="usernameDiv">
+						<input class="input" type="text" name="username" placeholder="E-Mail" id="name">
+						<span class="focus-input" data-placeholder="person"></span>
+					</div>
+	
+					<div class="wrap-input" data-validate="Enter SMS Code"  id="tokenDiv" style="display: none">
+						<input class="input" type="text" name="smsToken" placeholder="Code" id="token">
+						<span class="focus-input" data-placeholder="sms"></span>
+					</div>
+
+					<div class="wrap-input" data-validate="Enter password"  id="passwordDiv" style="display: block">
+						<input class="input" type="password" name="password" placeholder="Password" id="password" data-i18n-placeholder="passwordPlaceholder">
+						<span class="focus-input" data-placeholder="lock"></span>
+					</div>
+					<div style="margin-bottom: 20px" id="rememberDiv">
+						<input type="checkbox" name="remember" id="remember">
+						<label data-i18n="login.rememberMe">Remember me</label>
+					</div>
+					<div>
+						<p class="alert" style="color: red; display: none" href="index.html" id="wrongMail" data-i18n="error.invalidEmailAddress">This email address does not work.<br><br></p>
+						<p class="alert" style="color: red; display: none" href="index.html" id="rejected" data-i18n="error.pushRejected">The push notification has been rejected.<br><br></p>
+						<p class="alert" style="color: red; display: none" href="index.html" id="rejectedCode" data-i18n="error.smsCodeRejected">The SMS code has been rejected.<br><br></p>
+						<p class="alert" style="color: red; display: none" href="index.html" id="timeout" data-i18n="error.pushTimeout">The push notification timed out.<br><br></p>
+					</div>
+					<div class="container-login-form-btn">
+						<button class="login-form-btn" type="submit" id="continueButton">
+							<i class="material-icons">login</i> <span style="font-size: 17px" data-i18n="continue">Continue</span>
+						</button>
+						<button style="display: none" type="submit" class="login-form-btn" type="button" id="submitTokenButton">
+							<i class="material-icons">login</i> <span data-i18n="submitSMSCode">Submit SMS Code</span>
+						</button>
+						<div style="display: none; flex-direction: column; align-items: center" id="resendSMS">
+							<button disabled style="margin-top: 10px; margin-left: auto; margin-right: auto;" type="button" class="login-form-btn" id="resendSMSButton">
+								<i class="material-icons">loop</i> <span data-i18n="resendSMS">Resend SMS</span>
+							</button>
+							<div style="text-align: center; font-size: 12px" data-i18n="resendSMSHint">SMS can be resent every 30 seconds</div>
+						</div>
+						<div style="display: none" id="numberChallenge">
+							<div class="number-challenge-div" data-i18n="numberChallengeStart">Please tab </div>
+							<div class="number-challenge-number-div" id="numberChallengeNumber">11</div>
+							<div class="number-challenge-div" data-i18n="numberChallengeEnd"> on your phone</div>
+						</div>
+						<button disabled style="display: none" class="login-form-btn" type="button" id="loadingButton">
+							<i class="material-icons">touch_app</i> <span data-i18n="sendPush">Sending push notification...</span>
+						</button>
+						<button style="display: none" class="login-form-btn" type="submit" id="resendButton">
+							<i class="material-icons">loop</i> <span data-i18n="resendPush">Resend push notification</span>
+						</button>
+					</div>
+				</form>
+	
+				<div class="button-group" id="loginProgress">
+					<button type="button" id="step1" class="buttonactive"></button>
+					<button type="button" id="step2" class="button"></button>
+					<button type="button" id="step3" class="button"></button>
+				</div>
+				<br><p class="help-text" data-i18n="help?">Help?</p>
+				<p class="help-text"><a href="tel:004989998271671" class="help-text hover-darken" id="phone">+49 89 998 2716 - 71</a></p>
+				<p class="help-text"><a href="mailto:support@qplix.com" class="help-text hover-darken" id="mail">support@qplix.com</a></p>
+			</div>
+		</div>
+		<div id="backgroundAuthor"
+			 style="position: absolute; bottom: 10px; right: 10px; background-color: rgba(0, 0, 0, 0.7); 
+            color: #fff; padding: 8px 12px; border-radius: 4px; font-size: 14px; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); z-index: 10;"
+			 ng-cloak>
+			<span>
+				<a id="authorLink" href="" target="_blank" style="color: #fff; text-decoration: underline;">
+					© <span id="authorName"></span>
+				</a>
+			</span>
+		</div>
+	</div>
+</body>
+</html>
