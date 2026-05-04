@@ -256,6 +256,73 @@ Anchor placeholders (use `--anchors` flag):
 - `/dt1/`, `/dt2/` — date signed fields
 - `/nm1/`, `/nm2/` — full name fields
 
+## QPlix API Tool
+
+Location: `tools/qplix-api/`
+Usage: `npx tsx ~/repos/dotbrain/tools/qplix-api/src/index.ts <command>`
+Credentials: `tools/qplix-api/.env` (just `QPLIX_BASE_URL=https://gkk.qplix.com`)
+Spec: `tools/qplix-api/spec/openapi.{json,yaml}` — full OpenAPI for the tenant
+
+Read-only CLI for QPlix portfolio data (clients, legal entities, reports, transactions, positions). Used for BOC group portfolio reporting and document download via GKK's QPlix tenant.
+
+**Auth — non-obvious:** /qapi/v1/* authenticates by F5 BIG-IP + .NET session cookies *only* — the Okta JWTs visible in the InvestorPortal are red-herrings (they're used by /qapi/user/* helpers but not the data API). Sending an Authorization: Bearer header makes the app return 401. Cookies are session-scoped (die when browser closes), so the only path is to mint them via a real headed browser.
+
+Setup:
+1. Copy `.env.example` to `.env`, set `QPLIX_BASE_URL` (default `https://gkk.qplix.com`)
+2. Run `qplix-api login` once — opens Chromium, complete M365 SSO. Persistent profile at `.browser-profile/` keeps M365 session sticky for ~weeks; subsequent `login` runs are usually silent.
+3. Sessions cache for 25 min (F5 idle timeout is ~30). Re-run `login` when API calls start returning 401.
+
+Commands:
+```bash
+# Auth
+qplix-api login [--debug]              # Mint F5 session cookies (headed browser)
+qplix-api logout [--hard]              # Clear cache (--hard also wipes browser profile)
+
+# Clients
+qplix-api clients list [--limit N]
+qplix-api clients get <clientId>
+qplix-api clients groups <clientId>
+
+# Legal entities (portfolios)
+qplix-api le list [-s "search"] [--include-virtual] [--limit N]
+qplix-api le get <id> [--inherited]
+qplix-api le custodians <id>
+qplix-api le bank-accounts <id> <custodianId>
+qplix-api le properties <id>
+qplix-api le documents <id> [path]
+qplix-api le query <id> <presetId> [--start-date YYYY-MM-DD] [--due-date YYYY-MM-DD]
+qplix-api le transactions <id> <presetId> [--from YYYY-MM-DD] [--due-date YYYY-MM-DD]
+
+# Reports
+qplix-api reports list [--legal-entity <id>...] [--released-only]
+qplix-api reports get <id>
+qplix-api reports templates
+qplix-api reports pdf <id> <outPath>
+
+# Raw passthrough (escape hatch when no dedicated command exists)
+qplix-api raw get /qapi/v1/<path> [-q key=value ...]
+qplix-api raw post /qapi/v1/<path> -b '{"json":"body"}'
+```
+
+**Navigating the OpenAPI spec without blowing context:** the spec files are large (openapi.json ≈ 580 KB / 19k lines, openapi.yaml ≈ 1.2 MB / 33k lines). Don't `Read` them wholesale. Search first:
+
+```bash
+# List all paths matching a keyword
+python3 -c "import json; s=json.load(open('tools/qplix-api/spec/openapi.json')); [print(p) for p in s['paths'] if 'transaction' in p.lower()]"
+
+# Inspect a specific endpoint's params + response schema
+python3 -c "import json; s=json.load(open('tools/qplix-api/spec/openapi.json')); print(json.dumps(s['paths']['/qapi/v1/legalEntities/{id}/queryResults/{presetId}'], indent=2))"
+
+# Resolve a $ref-ed schema by name
+python3 -c "import json; s=json.load(open('tools/qplix-api/spec/openapi.json')); print(json.dumps(s['components']['schemas']['<SchemaName>'], indent=2))"
+```
+
+Common queries cheat-sheet:
+- "Who are the clients?" → `qplix-api clients list`
+- "What portfolios exist?" → `qplix-api le list`
+- "Latest BOC report PDF" → `qplix-api reports list --legal-entity <BOC-id>`, then `qplix-api reports pdf <reportId> ./out.pdf`
+- "Positions/transactions for a portfolio" → first need a saved preset ID — list via `qplix-api raw get /qapi/v1/legalEntities/<id>/queryPresets` (or whichever path the spec exposes), then run `le query` / `le transactions` against it.
+
 ## Conventions
 
 - Templates use `<PLACEHOLDER>` markers for project-specific values
