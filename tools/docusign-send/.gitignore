@@ -3,3 +3,6 @@ dist/
 .env
 .token-cache.json
 *.key
+
+# never track real signed/unsigned documents
+*.pdf

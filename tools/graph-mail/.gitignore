@@ -3,3 +3,8 @@ dist/
 output/
 drafts/
 .env
+
+# ad-hoc helper scripts and one-off migration data
+*.mts
+*.ps1
+pst-*.csv
