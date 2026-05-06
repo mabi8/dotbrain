@@ -290,7 +290,36 @@ export class CenterDeviceClient {
 
     return this.jsonRequest("/documents", {
       method: "POST",
-      body: { action: "search", ...searchParams },
+      body: { action: "search", params: searchParams },
+    });
+  }
+
+  async downloadDocument(
+    documentId: string,
+    version?: number
+  ): Promise<{ data: Buffer; contentType: string; filename: string }> {
+    let path = `/document/${documentId}`;
+    if (version) path += `;version=${version}`;
+
+    const res = await this.request(path, { accept: "*/*" });
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Download failed (${res.status}): ${text}`);
+    }
+
+    const contentType = res.headers.get("Content-Type") || "application/octet-stream";
+    const disposition = res.headers.get("Content-Disposition") || "";
+    const filenameMatch = disposition.match(/filename="?([^";\n]+)"?/);
+    const filename = filenameMatch?.[1] || documentId;
+    const data = Buffer.from(await res.arrayBuffer());
+
+    return { data, contentType, filename };
+  }
+
+  async getDocumentMetadata(documentId: string): Promise<unknown> {
+    return this.jsonRequest(`/document/${documentId}`, {
+      method: "GET",
     });
   }
 

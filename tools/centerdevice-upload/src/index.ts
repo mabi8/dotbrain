@@ -1,27 +1,44 @@
 import { Command } from "commander";
-import { readFileSync, statSync, readdirSync } from "fs";
+import { readFileSync, writeFileSync, statSync, readdirSync } from "fs";
 import { resolve, basename, extname } from "path";
 import { lookup } from "mime-types";
 import { config as loadEnv } from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { createInterface } from "readline";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-loadEnv({ path: resolve(__dirname, "..", ".env") });
+const ENV_PATH = resolve(__dirname, "..", ".env");
+loadEnv({ path: ENV_PATH });
 
 import { CenterDeviceClient, type CDConfig } from "./client.js";
 
-function createClient(): CenterDeviceClient {
-  const config: CDConfig = {
+function getBaseConfig() {
+  return {
     baseUrl: process.env.CD_BASE_URL || "https://api.centerdevice.de/v2",
     authUrl: process.env.CD_AUTH_URL || "https://auth.centerdevice.de",
     clientId: process.env.CD_CLIENT_ID || "",
     clientSecret: process.env.CD_CLIENT_SECRET || "",
-    refreshToken: process.env.CD_REFRESH_TOKEN || "",
   };
+}
+
+function createClient(): CenterDeviceClient {
+  const base = getBaseConfig();
+  let refreshToken = process.env.CD_REFRESH_TOKEN || "";
+
+  // Fall back to cached refresh token from login
+  if (!refreshToken) {
+    const cachePath = resolve(__dirname, "..", ".token-cache.json");
+    try {
+      const cache = JSON.parse(readFileSync(cachePath, "utf-8"));
+      if (cache.refresh_token) refreshToken = cache.refresh_token;
+    } catch { /* no cache */ }
+  }
+
+  const config: CDConfig = { ...base, refreshToken };
 
   if (!config.clientId || !config.clientSecret || !config.refreshToken) {
-    console.error("Missing credentials. Copy .env.example to .env and fill in CD_CLIENT_ID, CD_CLIENT_SECRET, CD_REFRESH_TOKEN");
+    console.error("Missing credentials. Run 'cd-upload login' first, or set CD_CLIENT_ID, CD_CLIENT_SECRET, CD_REFRESH_TOKEN in .env");
     process.exit(1);
   }
 
@@ -30,6 +47,92 @@ function createClient(): CenterDeviceClient {
 
 const program = new Command();
 program.name("centerdevice-upload").description("Upload files to CenterDevice").version("1.0.0");
+
+// ─── login ──────────────────────────────────────────────────────────
+
+program
+  .command("login")
+  .description("Authenticate with CenterDevice via browser OAuth flow")
+  .action(async () => {
+    const base = getBaseConfig();
+    if (!base.clientId || !base.clientSecret) {
+      console.error("Set CD_CLIENT_ID and CD_CLIENT_SECRET in .env first.");
+      process.exit(1);
+    }
+
+    const redirectUri = "https://box.makkib.com:9443/auth/callback";
+
+    const authUrl = `${base.authUrl}/authorize?` + new URLSearchParams({
+      client_id: base.clientId,
+      response_type: "code",
+      redirect_uri: redirectUri,
+    }).toString();
+
+    console.log(`\nOpen this URL in your browser and log in:\n\n  ${authUrl}\n`);
+    console.log("After login, the browser will redirect. Copy the full URL from the address bar.\n");
+
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    const input = await new Promise<string>((res) => {
+      rl.question("Paste the code or callback URL here: ", (answer) => {
+        rl.close();
+        res(answer.trim());
+      });
+    });
+
+    // Accept either a bare code or a full callback URL with ?code=...
+    let code = input;
+    if (input.includes("code=")) {
+      const url = new URL(input);
+      code = url.searchParams.get("code") || input;
+    }
+
+    // Exchange authorization code for tokens
+    const tokenBody = new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: redirectUri,
+    });
+
+    const credentials = Buffer.from(`${base.clientId}:${base.clientSecret}`).toString("base64");
+    const tokenRes = await fetch(`${base.authUrl}/token`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${credentials}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: tokenBody.toString(),
+    });
+
+    if (!tokenRes.ok) {
+      const text = await tokenRes.text();
+      console.error(`Token exchange failed (${tokenRes.status}): ${text}`);
+      process.exit(1);
+    }
+
+    const tokens = await tokenRes.json() as {
+      access_token: string;
+      refresh_token: string;
+      expires_in: number;
+    };
+
+    // Save to token cache
+    const cachePath = resolve(__dirname, "..", ".token-cache.json");
+    writeFileSync(cachePath, JSON.stringify({
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+      expires_at: Date.now() + tokens.expires_in * 1000,
+    }, null, 2));
+
+    // Update .env with refresh token
+    let envContent = readFileSync(ENV_PATH, "utf-8");
+    envContent = envContent.replace(
+      /^CD_REFRESH_TOKEN=.*$/m,
+      `CD_REFRESH_TOKEN=${tokens.refresh_token}`
+    );
+    writeFileSync(ENV_PATH, envContent);
+
+    console.log("\nLogin successful! Tokens saved.");
+  });
 
 // ─── whoami ──────────────────────────────────────────────────────────
 
@@ -40,6 +143,33 @@ program
     const cd = createClient();
     const user = await cd.getCurrentUser();
     console.log(JSON.stringify(user, null, 2));
+  });
+
+// ─── download ───────────────────────────────────────────────────────
+
+program
+  .command("download <document-ids...>")
+  .description("Download one or more documents by ID")
+  .option("-o, --output <dir>", "Output directory", ".")
+  .option("-v, --version <n>", "Document version number")
+  .action(async (documentIds: string[], opts) => {
+    const cd = createClient();
+    const outDir = resolve(opts.output);
+
+    for (const docId of documentIds) {
+      try {
+        const { data, filename } = await cd.downloadDocument(
+          docId,
+          opts.version ? parseInt(opts.version, 10) : undefined
+        );
+        const outPath = resolve(outDir, filename);
+        writeFileSync(outPath, data);
+        const sizeMB = (data.length / 1024 / 1024).toFixed(2);
+        console.log(`  ✓ ${filename} (${sizeMB} MB) → ${outPath}`);
+      } catch (err: unknown) {
+        console.error(`  ✗ ${docId}: ${err instanceof Error ? err.message : err}`);
+      }
+    }
   });
 
 // ─── upload ──────────────────────────────────────────────────────────
