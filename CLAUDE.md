@@ -71,6 +71,22 @@ Location: `tools/md-pdf/`
 Usage: `python3 ~/repos/dotbrain/tools/md-pdf/md2pdf.py input.md -o output.pdf`
 Converts Markdown to McKinsey-style PDFs (WeasyPrint + custom CSS). Supports tables, code highlighting, blockquote callouts, footnotes, and page numbers. Use `--css` to override the built-in stylesheet. Accepts `-` for stdin.
 
+Plotly charts (incl. waterfalls) render via fenced ```` ```plotly ```` blocks containing a Plotly figure JSON spec (`data` + `layout`). Rendered to inline SVG via kaleido — no JS, no browser. McKinsey-ish defaults applied (navy/crimson palette, simple_white template, Inter font); user `layout` keys override. Optional `_width` / `_height` keys at top level control SVG dimensions. Example:
+
+````markdown
+```plotly
+{
+  "data": [{
+    "type": "waterfall",
+    "x": ["Revenue", "COGS", "Gross profit", "Opex", "EBIT"],
+    "y": [12000, -7200, 0, -2800, 0],
+    "measure": ["absolute", "relative", "total", "relative", "total"]
+  }],
+  "layout": {"title": "FY P&L bridge"}
+}
+```
+````
+
 ## INWX DNS Tool
 
 Location: `tools/inwx-dns/`

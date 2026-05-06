@@ -1,3 +1,5 @@
 markdown>=3.6
 weasyprint>=62
 Pygments>=2.18
+plotly>=5.20
+kaleido==0.2.1

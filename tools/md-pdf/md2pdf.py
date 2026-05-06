@@ -2,7 +2,10 @@
 """Convert Markdown files to McKinsey-style PDFs."""
 
 import argparse
+import json
+import re
 import sys
+import warnings
 from datetime import date
 from pathlib import Path
 
@@ -14,12 +17,78 @@ from markdown.extensions.footnotes import FootnoteExtension
 from markdown.extensions.meta import MetaExtension
 from weasyprint import HTML
 
+# kaleido 0.2.1 is the last version that ships its own renderer (no Chrome needed).
+# Plotly emits a deprecation warning each call; suppress it.
+warnings.filterwarnings("ignore", message=r"(?s).*Kaleido.*", category=DeprecationWarning)
+
 TOOL_DIR = Path(__file__).resolve().parent
 DEFAULT_CSS = TOOL_DIR / "style.css"
+
+PLOTLY_BLOCK_RE = re.compile(r"^```plotly\s*\n(.*?)\n```\s*$", re.MULTILINE | re.DOTALL)
+PLOTLY_DEFAULTS = {
+    "template": "simple_white",
+    "font": {"family": "Inter, Helvetica Neue, Arial, sans-serif", "size": 12, "color": "#1a1a1a"},
+    "colorway": ["#2251FF", "#051C2C", "#9FA8B8", "#00A9E0", "#E5B400"],
+    "margin": {"l": 60, "r": 30, "t": 50, "b": 50},
+    "paper_bgcolor": "white",
+    "plot_bgcolor": "white",
+    "waterfall": {
+        "increasing": {"marker": {"color": "#2251FF"}},
+        "decreasing": {"marker": {"color": "#C8102E"}},
+        "totals": {"marker": {"color": "#051C2C"}},
+        "connector": {"line": {"color": "#9FA8B8", "width": 1}},
+    },
+}
+
+
+def render_plotly_blocks(md_text: str) -> str:
+    """Replace ```plotly fenced blocks with rendered inline SVG."""
+    import plotly.graph_objects as go
+
+    def render(match: re.Match) -> str:
+        spec_text = match.group(1)
+        try:
+            spec = json.loads(spec_text)
+        except json.JSONDecodeError as exc:
+            return f'<pre class="chart-error">Invalid plotly JSON: {exc}</pre>'
+
+        width = spec.pop("_width", 900)
+        height = spec.pop("_height", 480)
+
+        fig = go.Figure(spec)
+
+        layout_updates = {k: v for k, v in PLOTLY_DEFAULTS.items() if k != "waterfall"}
+        # Only set fields the user didn't explicitly override
+        user_layout = spec.get("layout") or {}
+        for key, value in list(layout_updates.items()):
+            if key in user_layout:
+                layout_updates.pop(key)
+        fig.update_layout(**layout_updates)
+
+        # Apply waterfall trace defaults if user didn't set them
+        wf = PLOTLY_DEFAULTS["waterfall"]
+        for trace in fig.data:
+            if trace.type != "waterfall":
+                continue
+            if trace.increasing.marker.color is None:
+                trace.increasing = wf["increasing"]
+            if trace.decreasing.marker.color is None:
+                trace.decreasing = wf["decreasing"]
+            if trace.totals.marker.color is None:
+                trace.totals = wf["totals"]
+            if trace.connector.line.color is None:
+                trace.connector = wf["connector"]
+
+        svg = fig.to_image(format="svg", width=width, height=height).decode("utf-8")
+        svg = re.sub(r"<\?xml[^>]*\?>\s*", "", svg)
+        return f'\n\n<div class="chart">{svg}</div>\n\n'
+
+    return PLOTLY_BLOCK_RE.sub(render, md_text)
 
 
 def md_to_html(md_text: str) -> str:
     """Convert markdown text to styled HTML document."""
+    md_text = render_plotly_blocks(md_text)
     extensions = [
         "tables",
         "fenced_code",

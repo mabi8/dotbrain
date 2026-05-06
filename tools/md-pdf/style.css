@@ -242,6 +242,27 @@ img {
   break-inside: avoid;
 }
 
+/* ── Plotly charts (rendered via kaleido → inline SVG) ── */
+
+.chart {
+  margin: 4mm auto;
+  text-align: center;
+  break-inside: avoid;
+}
+
+.chart svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.chart-error {
+  background: #fff4f4;
+  border-left: 2.5px solid #C8102E;
+  color: #C8102E;
+  padding: 3mm 4mm;
+  font-size: 8pt;
+}
+
 /* ── Utility: explicit page break ── */
 
 .page-break {
