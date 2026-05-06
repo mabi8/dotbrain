@@ -27,13 +27,23 @@ function toRecipients(addresses: string[]) {
   return addresses.map((a) => ({ emailAddress: { address: a.trim() } }));
 }
 
+const EMAIL_STYLE = `font-family: Aptos, Calibri, Arial, sans-serif; font-size: 11pt; color: #000000;`;
+
 async function readBody(bodyPath: string): Promise<{ html: string; text: string }> {
   const content = await readFile(bodyPath, "utf-8");
   if (bodyPath.endsWith(".md")) {
     const html = await marked(content);
-    return { html, text: content };
+    // Wrap in Outlook-style div and strip bold tags for plain email look
+    const plainHtml = html.replace(/<\/?strong>/g, "").replace(/<\/?b>/g, "");
+    return { html: `<div style="${EMAIL_STYLE}">${plainHtml}</div>`, text: content };
   }
-  return { html: `<pre>${content}</pre>`, text: content };
+  // For .txt files, convert newlines to <br> for proper line breaks
+  const htmlContent = content
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\n/g, "<br>");
+  return { html: `<div style="${EMAIL_STYLE}">${htmlContent}</div>`, text: content };
 }
 
 async function buildAttachments(paths: string[]) {
